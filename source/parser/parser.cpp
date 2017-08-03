@@ -234,6 +234,28 @@ void Parser::Run()
             sceneData->lightGroupLightSources[i]->index = i;
             sceneData->lightGroupLightSources[i]->lightGroupLight = true;
         }
+
+        for(SceneData::DeclaredVariablesMap::iterator i(sceneData->declaredVariables.begin()); i != sceneData->declaredVariables.end(); i++)
+        {
+            if(i->second.length() > 0)
+            {
+                SYM_ENTRY *Temp_Entry = Find_Symbol(i->first.c_str());
+                if (Temp_Entry)
+                {
+                    std::ostringstream sstr;
+                    if (Temp_Entry->Token_Number == STRING_ID_TOKEN)
+                    {
+                        sstr << '\"';
+                        sstr << UCS2_To_String(reinterpret_cast<UCS2*>(Temp_Entry->Data));
+                        sstr << '\"';
+                    }
+                    else
+                        sstr << *(reinterpret_cast<DBL *>(Temp_Entry->Data));
+                    i->second = sstr.str();
+                }
+            }
+        }
+
     }
     catch(std::bad_alloc&)
     {

@@ -316,6 +316,26 @@ void Scene::SendDoneMessage(TaskQueue&)
         doneMessage.SetInt(kPOVAttrib_WorkingGammaType, sceneData->workingGamma->GetTypeId());
         doneMessage.SetFloat(kPOVAttrib_WorkingGamma, sceneData->workingGamma->GetParam());
     }
+
+    SceneData::DeclaredVariablesMap::const_iterator i = sceneData->declaredVariables.find(string("image_width"));
+    if (i != sceneData->declaredVariables.end())
+        doneMessage.SetFloat(kPOVAttrib_Width, atof(i->second.c_str()));
+    i = sceneData->declaredVariables.find(string("image_height"));
+    if (i != sceneData->declaredVariables.end())
+        doneMessage.SetFloat(kPOVAttrib_Height, atof(i->second.c_str()));
+    i = sceneData->declaredVariables.find(string("image_start_column"));
+    if (i != sceneData->declaredVariables.end())
+        doneMessage.SetFloat(kPOVAttrib_Left, atof(i->second.c_str()));
+    i = sceneData->declaredVariables.find(string("image_end_column"));
+    if (i != sceneData->declaredVariables.end())
+        doneMessage.SetFloat(kPOVAttrib_Right, atof(i->second.c_str()));
+    i = sceneData->declaredVariables.find(string("image_start_row"));
+    if (i != sceneData->declaredVariables.end())
+        doneMessage.SetFloat(kPOVAttrib_Top, atof(i->second.c_str()));
+    i = sceneData->declaredVariables.find(string("image_end_row"));
+    if (i != sceneData->declaredVariables.end())
+        doneMessage.SetFloat(kPOVAttrib_Bottom, atof(i->second.c_str()));
+
     POVMS_SendMessage(doneMessage);
 }
 

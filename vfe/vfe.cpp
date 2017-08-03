@@ -736,7 +736,7 @@ bool VirtualFrontEnd::Start(POVMS_Object& opts)
     // can serialize completed rows to the final image output file.
     options = opts;
 
-    if (m_Session->OutputToFileSet())
+    /*if (m_Session->OutputToFileSet())
     {
       imageProcessing = shared_ptr<ImageProcessing> (new ImageProcessing (opts));
       UCS2String filename = imageProcessing->GetOutputFilename (opts, 0, 0);
@@ -756,7 +756,7 @@ bool VirtualFrontEnd::Start(POVMS_Object& opts)
       }
       shelloutProcessing->SetOutputFile(UCS2toASCIIString(filename));
       m_Session->AdviseOutputFilename (filename);
-    }
+    }*/
   }
   else
   {
@@ -1126,6 +1126,43 @@ State VirtualFrontEnd::Process()
             // case.
             return state;
           }
+
+          if (m_Session->OutputToFileSet() && !animationProcessing)
+          {
+            POVMS_Object view = renderFrontend.GetParsedView(sceneId);
+            if (view.Exist(kPOVAttrib_Width))
+                options.SetInt(kPOVAttrib_Width, (int)view.GetFloat(kPOVAttrib_Width));
+            if (view.Exist(kPOVAttrib_Height))
+                options.SetInt(kPOVAttrib_Height, (int)view.GetFloat(kPOVAttrib_Height));
+            if (view.Exist(kPOVAttrib_Left))
+                options.SetFloat(kPOVAttrib_Left, view.GetFloat(kPOVAttrib_Left));
+            if (view.Exist(kPOVAttrib_Right))
+                options.SetFloat(kPOVAttrib_Right, view.GetFloat(kPOVAttrib_Right));
+            if (view.Exist(kPOVAttrib_Top))
+                options.SetFloat(kPOVAttrib_Top, view.GetFloat(kPOVAttrib_Top));
+            if (view.Exist(kPOVAttrib_Bottom))
+                options.SetFloat(kPOVAttrib_Bottom, view.GetFloat(kPOVAttrib_Bottom));
+  
+            imageProcessing = shared_ptr<ImageProcessing> (new ImageProcessing (options));
+            UCS2String filename = imageProcessing->GetOutputFilename (options, 0, 0);
+            options.SetUCS2String (kPOVAttrib_OutputFile, filename.c_str());
+  
+            if ((imageProcessing->OutputIsStdout() || imageProcessing->OutputIsStderr()) && m_Session->ImageOutputToStdoutSupported() == false)
+              throw POV_EXCEPTION(kCannotOpenFileErr, "Image output to STDOUT/STDERR not supported on this platform");
+  
+            // test access permission now to avoid surprise later after waiting for
+            // the render to complete.
+            if (imageProcessing->OutputIsStdout() == false && imageProcessing->OutputIsStderr() == false && m_Session->TestAccessAllowed(filename, true) == false)
+            {
+              string str ("IO Restrictions prohibit write access to '") ;
+              str += UCS2toASCIIString(filename);
+              str += "'";
+              throw POV_EXCEPTION(kCannotOpenFileErr, str);
+            }
+            shelloutProcessing->SetOutputFile(UCS2toASCIIString(filename));
+            m_Session->AdviseOutputFilename (filename);
+          }
+
           try { viewId = renderFrontend.CreateView(sceneId, options, imageProcessing, boost::bind(&vfe::VirtualFrontEnd::CreateDisplay, this, _1, _2, _3)); }
           catch(pov_base::Exception& e)
           {

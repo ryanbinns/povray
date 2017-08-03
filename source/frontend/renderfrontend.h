@@ -121,6 +121,10 @@ struct SceneData
         GammaTypeId workingGammaType;
         float workingGamma;
     } backwardCompatibilityData;
+
+    POVMS_Object view;
+
+    SceneData() : view(kPOVMSType_WildCard) { }
 };
 
 struct ViewData
@@ -281,6 +285,8 @@ class RenderFrontend : public RenderFrontendBase
 
         SceneData::SceneState GetSceneState(SceneId sid);
 
+        POVMS_Object GetParsedView(SceneId sid);
+
         void StartParser(SceneId sid, POVMS_Object& obj);
         void PauseParser(SceneId sid);
         void ResumeParser(SceneId sid);
@@ -397,6 +403,16 @@ SceneData::SceneState RenderFrontend<PARSER_MH, FILE_MH, RENDER_MH, IMAGE_MH>::G
         return shi->second.data.state;
     else
         return SceneData::Scene_Unknown;
+}
+
+template<class PARSER_MH, class FILE_MH, class RENDER_MH, class IMAGE_MH>
+POVMS_Object RenderFrontend<PARSER_MH, FILE_MH, RENDER_MH, IMAGE_MH>::GetParsedView(SceneId sid)
+{
+    typename SceneHandlerMap::iterator shi(scenehandler.find(sid));
+    if(shi != scenehandler.end())
+        return shi->second.data.view;
+    else
+        return POVMS_Object(kPOVMSType_WildCard);
 }
 
 template<class PARSER_MH, class FILE_MH, class RENDER_MH, class IMAGE_MH>
@@ -755,6 +771,20 @@ void RenderFrontend<PARSER_MH, FILE_MH, RENDER_MH, IMAGE_MH>::HandleParserMessag
     {
         if(ident == kPOVMsgIdent_Done)
         {
+            shi->second.data.view = POVMS_Object(kPOVMSType_WildCard);
+            if (msg.Exist(kPOVAttrib_Width))
+                shi->second.data.view.SetFloat(kPOVAttrib_Width, msg.GetFloat(kPOVAttrib_Width));
+            if (msg.Exist(kPOVAttrib_Height))
+                shi->second.data.view.SetFloat(kPOVAttrib_Height, msg.GetFloat(kPOVAttrib_Height));
+            if (msg.Exist(kPOVAttrib_Left))
+                shi->second.data.view.SetFloat(kPOVAttrib_Left, msg.GetFloat(kPOVAttrib_Left));
+            if (msg.Exist(kPOVAttrib_Right))
+                shi->second.data.view.SetFloat(kPOVAttrib_Right, msg.GetFloat(kPOVAttrib_Right));
+            if (msg.Exist(kPOVAttrib_Top))
+                shi->second.data.view.SetFloat(kPOVAttrib_Top, msg.GetFloat(kPOVAttrib_Top));
+            if (msg.Exist(kPOVAttrib_Bottom))
+                shi->second.data.view.SetFloat(kPOVAttrib_Bottom, msg.GetFloat(kPOVAttrib_Bottom));
+
             GetBackwardCompatibilityData(shi->second.data, msg);
             shi->second.data.state = SceneData::Scene_Ready;
         }
