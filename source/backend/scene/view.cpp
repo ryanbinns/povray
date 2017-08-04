@@ -775,6 +775,8 @@ void View::StartRender(POVMS_Object& renderOptions)
         throw POV_EXCEPTION(kParamErr, "Invalid start column or row");
     if ((viewData.renderArea.right >= viewData.GetWidth()) || (viewData.renderArea.bottom >= viewData.GetHeight()))
         throw POV_EXCEPTION(kParamErr, "Invalid end column or row");
+    if ((viewData.renderArea.left > viewData.renderArea.right) || (viewData.renderArea.top > viewData.renderArea.bottom))
+        throw POV_EXCEPTION(kParamErr, "Partial render coordinates are not normalized");
 
     viewData.blockSize = renderOptions.TryGetInt(kPOVAttrib_RenderBlockSize, 32);
     if(viewData.blockSize < 4)
