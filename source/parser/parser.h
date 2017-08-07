@@ -724,6 +724,7 @@ class Parser : public SceneTask
         SYM_ENTRY *Find_Symbol (const char *s);
         void Skip_Tokens (COND_TYPE cond);
         void Break (void);
+        void Continue (void);
 
         int get_hash_value (const char *s);
         inline void Write_Token (TOKEN Token_Id, int col, SYM_TABLE *table = NULL);
