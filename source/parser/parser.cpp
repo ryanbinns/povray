@@ -2280,7 +2280,7 @@ ObjectPtr Parser::Parse_CSG(int CSG_Type)
     if(Light_Source_Union)
         Object->Type |= LT_SRC_UNION_OBJECT;
 
-    if(Object_Count < 2)
+    if((Object_Count < 2) && !(CSG_Type & CSG_MERGE_TYPE) && !(CSG_Type & CSG_UNION_TYPE))
         VersionWarning(150, "Should have at least 2 objects in csg.");
 
     Object->Compute_BBox();
