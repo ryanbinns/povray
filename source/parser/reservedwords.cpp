@@ -151,6 +151,7 @@ const RESERVED_WORD Reserved_Words[] = {
     { CONIC_SWEEP_TOKEN,            "conic_sweep" },
     { CONSERVE_ENERGY_TOKEN,        "conserve_energy" },
     { CONTAINED_BY_TOKEN,           "contained_by" },
+    { CONTINUE_TOKEN,               "continue" },
     { CONTROL0_TOKEN,               "control0" },
     { CONTROL1_TOKEN,               "control1" },
     { COORDS_TOKEN,                 "coords" },

@@ -2145,6 +2145,14 @@ void Parser::Parse_Directive(int After_Hash)
             EXIT
         END_CASE
 
+        CASE (CONTINUE_TOKEN)
+            Parsing_Directive = false;
+            if (!Skipping)
+                Continue();
+            EXIT
+        END_CASE
+
+
         CASE2(CASE_TOKEN,RANGE_TOKEN)
             Parsing_Directive = false;
             switch(Curr_Type)
@@ -2893,6 +2901,79 @@ void Parser::Break()
     else
     {
         UNGET
+    }
+}
+
+/*****************************************************************************
+*
+* FUNCTION
+*
+* INPUT
+*
+* OUTPUT
+*
+* RETURNS
+*
+* AUTHOR
+*
+* DESCRIPTION
+*
+* CHANGES
+*
+******************************************************************************/
+
+void Parser::Continue()
+{
+    int Prev_Skip = Skipping;
+
+    Skipping = true;
+
+    while ( (CS_Index > 0) &&
+            (Cond_Stack[CS_Index].Cond_Type != WHILE_COND) &&
+            (Cond_Stack[CS_Index].Cond_Type != FOR_COND) )
+    {
+        Get_Token();
+    }
+
+    if (CS_Index == 0)
+        Error ("#continue appears outside of a #for or #while loop");
+
+    Skipping = Prev_Skip;
+
+    if (Cond_Stack[CS_Index].Loop_File != Input_File->In_File)
+        Error("#continue did not appear in file where the loop started.");
+
+    Got_EOF = false;
+    if (!Input_File->In_File->seekg(Cond_Stack[CS_Index].File_Pos))
+        Error("Unable to seek in input file for #continue directive.");
+
+    if (Cond_Stack[CS_Index].Cond_Type == WHILE_COND)
+    {
+        if (fabs(Parse_Cond_Param()) < EPSILON)
+        {
+            Cond_Stack[CS_Index].Cond_Type = SKIP_TIL_END_COND;
+            Skip_Tokens(SKIP_TIL_END_COND);
+        }
+    }
+    else    // FOR_COND
+    {
+        SYM_ENTRY* Entry = Find_Symbol(Table_Index, Cond_Stack[CS_Index].Loop_Identifier);
+        if ((Entry == NULL) || (Entry->Token_Number != FLOAT_ID_TOKEN))
+            Error ("#for loop variable must remain defined and numerical during loop.");
+
+        DBL* CurrentPtr = reinterpret_cast<DBL *>(Entry->Data);
+        DBL  End        = Cond_Stack[CS_Index].For_Loop_End;
+        DBL  Step       = Cond_Stack[CS_Index].For_Loop_Step;
+
+        *CurrentPtr = *CurrentPtr + Step;
+
+        if ( ((Step > 0) && (*CurrentPtr > End + EPSILON)) ||
+             ((Step < 0) && (*CurrentPtr < End - EPSILON)) )
+        {
+            POV_FREE(Cond_Stack[CS_Index].Loop_Identifier);
+            Cond_Stack[CS_Index].Cond_Type = SKIP_TIL_END_COND;
+            Skip_Tokens(SKIP_TIL_END_COND);
+        }
     }
 }
 
