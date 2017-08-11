@@ -48,6 +48,8 @@
 using namespace vfe;
 using namespace vfePlatform;
 
+#include "psapi.h"
+
 namespace pov_frontend
 {
     ////////////////////////////////
@@ -73,7 +75,12 @@ void PrintStatus (vfeSession *session)
       fprintf (stderr, "%s\n", str.c_str());
     }
     else
-      fprintf (stderr, "%s\r", str.c_str());
+    {
+      PROCESS_MEMORY_COUNTERS memInfo;
+      memInfo.cb = sizeof(memInfo);
+      GetProcessMemoryInfo(GetCurrentProcess(), &memInfo, sizeof(memInfo));
+      fprintf (stderr, "%s (%uMB)\r", str.c_str(), (unsigned int)(memInfo.WorkingSetSize / 1048576));
+    }
     lastType = type;
   }
 }
