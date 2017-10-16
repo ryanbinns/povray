@@ -186,7 +186,27 @@ static void PrintStatus (vfeSession *session)
             fprintf (stderr, "%s\n", str.c_str());
         }
         else
-            fprintf (stderr, "%s\r", str.c_str());
+        {
+            FILE *file = fopen("/proc/self/statm", "r");
+            if (!file)
+                fprintf (stderr, "%s\r", str.c_str());
+            else
+            {
+                unsigned long size, resident, share, text ,lib, data, dirty;
+                if (fscanf(file, "%ld %ld %ld %ld %ld %ld %ld",
+                    &size, &resident, &share, &text, &lib, &data, &dirty) != 7)
+                {
+                    fprintf (stderr, "%s\r", str.c_str());
+                }
+                else
+                {
+                    unsigned long page_size = sysconf(_SC_PAGESIZE);
+                    unsigned long mem = (page_size * (unsigned long long)resident) >> 20;
+                    fprintf (stderr, "%s (%luMB)\r", str.c_str(), mem);
+                }
+                fclose(file);
+            }
+        }
         lastType = type;
     }
 }
