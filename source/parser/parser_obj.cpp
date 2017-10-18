@@ -287,6 +287,8 @@ void Parser::Parse_Obj (Mesh* mesh)
         {
             case '\0': // empty line
             case '#': // comment
+            case PAIR('#','#'):
+            case TRIPLET('#','#','#'):
             case 'g': // group ("g NAME")
             case 'o': // object name ("o NAME")
                 skipLine = true;
