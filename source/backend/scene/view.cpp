@@ -528,13 +528,13 @@ void ViewData::CompletedRectangle(const POVRect& rect, unsigned int serial, floa
     {
         try
         {
-            pixelsCompleted += (int)(rect.GetArea() * completion);
+            pixelsCompleted += (POVMSLong)(rect.GetArea() * completion);
 
             POVMS_Object obj(kPOVObjectClass_RenderProgress);
             // TODO obj.SetLong(kPOVAttrib_RealTime, ElapsedRealTime());
-            obj.SetInt(kPOVAttrib_Pixels, renderArea.GetArea());
-            obj.SetInt(kPOVAttrib_PixelsPending, pixelsPending - pixelsCompleted + rect.GetArea());
-            obj.SetInt(kPOVAttrib_PixelsCompleted, pixelsCompleted);
+            obj.SetLong(kPOVAttrib_Pixels, renderArea.GetArea());
+            obj.SetLong(kPOVAttrib_PixelsPending, pixelsPending - pixelsCompleted + rect.GetArea());
+            obj.SetLong(kPOVAttrib_PixelsCompleted, pixelsCompleted);
             RenderBackend::SendViewOutput(viewId, sceneData->frontendAddress, kPOVMsgIdent_Progress, obj);
         }
 
@@ -1475,11 +1475,11 @@ const Camera *RTRData::CompletedFrame()
 
                 POVMS_SendMessage(pixelblockmsg);
 
-                numPixelsCompleted += width * height;
+                numPixelsCompleted += (POVMSLong)width * (POVMSLong)height;
                 POVMS_Object obj(kPOVObjectClass_RenderProgress);
-                obj.SetInt(kPOVAttrib_Pixels, width * height);
-                obj.SetInt(kPOVAttrib_PixelsPending, 0);
-                obj.SetInt(kPOVAttrib_PixelsCompleted, numPixelsCompleted);
+                obj.SetLong(kPOVAttrib_Pixels, (POVMSLong)width * (POVMSLong)height);
+                obj.SetLong(kPOVAttrib_PixelsPending, 0);
+                obj.SetLong(kPOVAttrib_PixelsCompleted, numPixelsCompleted);
                 RenderBackend::SendViewOutput(viewData.GetViewId(), viewData.GetSceneData()->frontendAddress, kPOVMsgIdent_Progress, obj);
 
                 return(ca ? &cameras[numRTRframes % cameras.size()] : NULL);

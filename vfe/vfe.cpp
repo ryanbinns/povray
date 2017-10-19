@@ -450,8 +450,8 @@ void vfeRenderMessageHandler::Progress(Console *Con, POVMS_Object& Obj, bool ver
     }
     case kPOVObjectClass_RadiosityProgress:
     {
-      int pc (Obj.GetInt (kPOVAttrib_Pixels)) ;
-      int cc (Obj.GetInt (kPOVAttrib_PixelsCompleted)) ;
+      POVMSLong pc (Obj.GetLong (kPOVAttrib_Pixels)) ;
+      POVMSLong cc (Obj.GetLong (kPOVAttrib_PixelsCompleted)) ;
       m_Session->SetPixelsRendered(cc, pc);
       int percent = pc > 0 ? int ((cc * 100.0) / pc) : 0 ;
       m_Session->SetPercentComplete (percent);
@@ -460,8 +460,8 @@ void vfeRenderMessageHandler::Progress(Console *Con, POVMS_Object& Obj, bool ver
     }
     case kPOVObjectClass_RenderProgress:
     {
-      int pc (Obj.GetInt (kPOVAttrib_Pixels)) ;
-      int cc (Obj.GetInt (kPOVAttrib_PixelsCompleted)) ;
+      POVMSLong pc (Obj.GetLong (kPOVAttrib_Pixels)) ;
+      POVMSLong cc (Obj.GetLong (kPOVAttrib_PixelsCompleted)) ;
 
       if (m_Session->GetRealTimeRaytracing() == false)
       {

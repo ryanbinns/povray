@@ -143,8 +143,8 @@ void RenderMessageHandler::Progress(Console *console, POVMS_Object& obj, bool ve
         }
         case kPOVObjectClass_RadiosityProgress:
         {
-            int pt(obj.GetInt(kPOVAttrib_Pixels));
-            int pc(obj.GetInt(kPOVAttrib_PixelsCompleted));
+            POVMSLong pt(obj.GetLong(kPOVAttrib_Pixels));
+            POVMSLong pc(obj.GetLong(kPOVAttrib_PixelsCompleted));
             int percent = 0;
 
             if(pt > 0)
@@ -156,9 +156,9 @@ void RenderMessageHandler::Progress(Console *console, POVMS_Object& obj, bool ve
         }
         case kPOVObjectClass_RenderProgress:
         {
-            int pt(obj.GetInt(kPOVAttrib_Pixels));
-            int pp(obj.GetInt(kPOVAttrib_PixelsPending));
-            int pc(obj.GetInt(kPOVAttrib_PixelsCompleted));
+            POVMSLong pt(obj.GetLong(kPOVAttrib_Pixels));
+            POVMSLong pp(obj.GetLong(kPOVAttrib_PixelsPending));
+            POVMSLong pc(obj.GetLong(kPOVAttrib_PixelsCompleted));
             int percent = 0;
 
             if(pt > 0)

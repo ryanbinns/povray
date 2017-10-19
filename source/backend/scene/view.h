@@ -76,9 +76,9 @@ class RTRData
         boost::mutex counterMutex;
         boost::mutex eventMutex;
         boost::condition event;
-        int width;
-        int height;
-        unsigned int numPixelsCompleted;
+        unsigned int width;
+        unsigned int height;
+        POVMSLong numPixelsCompleted;
 };
 
 /**
@@ -275,9 +275,9 @@ class ViewData
         };
 
         /// pixels pending
-        volatile unsigned int pixelsPending;
+        volatile POVMSLong pixelsPending;
         /// pixels completed
-        volatile unsigned int pixelsCompleted;
+        volatile POVMSLong pixelsCompleted;
         /// Next block counter for algorithm to distribute parts of the scene to render threads.
         /// @note   Blocks with higher serial numbers may be dispatched out-of-order for certain reasons;
         ///         in that case, the dispatched block must be entered into @ref blockSkipList instead of
